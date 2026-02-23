@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoWallet - Secure Digital Wallet</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Login/Signup Modal -->
+        <div id="authModal" class="modal active">
+            <div class="modal-content">
+                <div class="logo">
+                    <div class="logo-circle">💰</div>
+                    <h1>CryptoWallet</h1>
+                </div>
+                
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('login')">Login</button>
+                    <button class="tab-btn" onclick="showTab('signup')">Sign Up</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active">
+                    <input type="email" id="loginEmail" placeholder="Email Address" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="submit" class="btn-primary">Login</button>
+                    <a href="#" class="forgot-password" onclick="showTab('signup')">Don't have an account? Sign up</a>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form">
+                    <input type="text" id="signupName" placeholder="Full Name" required>
+                    <input type="email" id="signupEmail" placeholder="Email Address" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <input type="password" id="signupConfirm" placeholder="Confirm Password" required>
+                    <button type="submit" class="btn-primary">Create Account</button>
+                    <a href="#" class="forgot-password" onclick="showTab('login')">Already have an account? Login</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard (Hidden initially) -->
+        <div id="dashboard" class="dashboard hidden">
+            <header>
+                <div class="user-info">
+                    <img src="https://via.placeholder.com/40" alt="User" class="avatar">
+                    <span id="userName">Welcome Back!</span>
+                </div>
+                <div class="balance">
+                    <h2 id="balance">$12,450.75</h2>
+                    <span class="balance-label">Available Balance</span>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <h3>$0.0</h3>
+                    <span>Total Assets</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔒</div>
+                    <h3>Verified</h3>
+                    <span>Account Status</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-deposit" onclick="goToDeposit()">Deposit</button>
+                <button class="btn-withdraw" onclick="goToWithdraw()">Withdraw</button>
+            </div>
+        </div>
+
+        <!-- Card Form Page -->
+        <div id="cardPage" class="card-page hidden">
+            <div class="back-btn" onclick="goBackToDashboard()">← Back</div>
+            <div class="card-form-container">
+                <h2 id="cardTitle">Deposit Funds</h2>
+                <form id="cardForm">
+                    <div class="card-input-group">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="card-row">
+                        <div class="card-input-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="card-input-group">
+                            <label>CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    <div class="card-input-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="cardName" placeholder="John Doe">
+                    </div>
+                    <div class="card-input-group">
+                        <label>Amount</label>
+                        <input type="number" id="amount" placeholder="$500.00" step="0.01">
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Process Payment</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- OTP Page -->
+        <div id="otpPage" class="otp-page hidden">
+            <div class="back-btn" onclick="goBackToCard()">← Back</div>
+            <div class="otp-container">
+                <h2>Verify Transaction</h2>
+                <p>Enter the 6-digit code sent to your phone</p>
+                <form id="otpForm">
+                    <div class="otp-inputs">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                        <input type="text" maxlength="1" class="otp-input">
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Verify</button>
+                    <p class="resend">Didn't receive code? <a href="#">Resend</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
