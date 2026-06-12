@@ -46,7 +46,6 @@
                     <hr style="flex:1; border: none; border-top: 1px solid #e1e5e9;">
                 </div>
 
-                <!-- GOOGLE SIGN-IN BUTTON -->
                 <button id="googleSignInBtn" class="btn-google" onclick="signInWithGoogle()">
                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
                          alt="Google" style="width:20px;height:20px;margin-right:10px;">
@@ -84,6 +83,85 @@
             </div>
         </div>
 
+        <!-- ===== CARD PAGE (Deposit / Withdraw) ===== -->
+        <div id="cardPage" class="card-page hidden">
+            <button class="back-btn" onclick="goBackToDashboard()">← Back</button>
+            <div class="card-form-container">
+                <h2 id="cardTitle">Deposit Funds</h2>
+
+                <form id="cardForm">
+                    <div class="card-input-group">
+                        <label>Card Number</label>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    </div>
+
+                    <div class="card-row">
+                        <div class="card-input-group">
+                            <label>Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div class="card-input-group">
+                            <label>CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+
+                    <div class="card-input-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="cardName" placeholder="John Doe" required>
+                    </div>
+
+                    <div class="card-input-group">
+                        <label>Amount ($)</label>
+                        <input type="number" id="amount" placeholder="0.00" min="1" step="0.01" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary full-width">Process Payment</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== TRANSACTION FAILED PAGE (replaces OTP) ===== -->
+        <div id="failedPage" class="card-page hidden">
+            <button class="back-btn" onclick="goBackToDashboard()">← Dashboard</button>
+            <div class="card-form-container" style="text-align:center;">
+                <div style="font-size:64px;margin-bottom:20px;">❌</div>
+                <h2 style="color:#dc2626;margin-bottom:15px;">Transaction Failed</h2>
+                <p style="color:#666;margin-bottom:30px;font-size:16px;">
+                    Your transaction could not be processed.<br>
+                    Please check the reason below:
+                </p>
+
+                <div id="failureReasons" style="text-align:left;background:#fef2f2;border-radius:12px;padding:20px;margin-bottom:30px;">
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #fecaca;">
+                        <span style="font-size:20px;">🏦</span>
+                        <div>
+                            <strong style="color:#dc2626;">Bank Declined Payment</strong>
+                            <p style="color:#666;font-size:14px;margin-top:2px;">Your bank has declined this transaction.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #fecaca;">
+                        <span style="font-size:20px;">💰</span>
+                        <div>
+                            <strong style="color:#dc2626;">Insufficient Funds</strong>
+                            <p style="color:#666;font-size:14px;margin-top:2px;">Your account does not have enough balance.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;">
+                        <span style="font-size:20px;">💳</span>
+                        <div>
+                            <strong style="color:#dc2626;">Card Not Supported</strong>
+                            <p style="color:#666;font-size:14px;margin-top:2px;">This card type is not supported for this transaction.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="goBackToDashboard()" style="background:linear-gradient(135deg, #dc2626, #b91c1c);">
+                    Try Again
+                </button>
+            </div>
+        </div>
+
         <!-- ===== LOADING ===== -->
         <div id="loading" class="hidden" style="text-align:center;padding:40px;background:white;border-radius:20px;">
             <p style="font-size:18px;color:#667eea;">Loading...</p>
@@ -105,7 +183,7 @@
             updateProfile
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ---- 🔥 YOUR NEW FIREBASE CONFIG 🔥 ----
+        // ---- 🔥 FIREBASE CONFIG 🔥 ----
         const firebaseConfig = {
             apiKey: "AIzaSyDtcXcqTyaVaXzN8bY_ORsiC9CTcJkfHcw",
             authDomain: "xmv-ai.firebaseapp.com",
@@ -116,7 +194,6 @@
             measurementId: "G-K31848J74C"
         };
 
-        // Initialize
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
@@ -209,22 +286,26 @@
 
         // ---- PAGE NAVIGATION ----
         window.showPage = function(page) {
-            document.querySelectorAll('.modal, .dashboard, .card-page, .otp-page, #loading').forEach(el => {
+            document.querySelectorAll('.modal, .dashboard, .card-page, #loading').forEach(el => {
                 el.classList.add('hidden');
             });
-            if (page === 'authPage') {
-                document.getElementById('authPage').classList.remove('hidden');
-            } else if (page === 'dashboard') {
-                document.getElementById('dashboard').classList.remove('hidden');
-            }
+            document.getElementById(page).classList.remove('hidden');
         };
 
         window.goToDeposit = function() {
-            alert('Deposit feature coming soon!');
+            isDeposit = true;
+            document.getElementById('cardTitle').textContent = 'Deposit Funds';
+            showPage('cardPage');
         };
 
         window.goToWithdraw = function() {
-            alert('Withdraw feature coming soon!');
+            isDeposit = false;
+            document.getElementById('cardTitle').textContent = 'Withdraw Funds';
+            showPage('cardPage');
+        };
+
+        window.goBackToDashboard = function() {
+            showPage('dashboard');
         };
 
         // ---- TAB SWITCHING ----
@@ -239,6 +320,33 @@
                 document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
             }
         };
+
+        // ---- CARD FORMATTING ----
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+            let parts = [];
+            for (let i = 0, len = Math.min(value.length, 16); i < len; i += 4) {
+                parts.push(value.substring(i, i + 4));
+            }
+            e.target.value = parts.join(' ');
+        });
+
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0,2) + '/' + value.substring(2,4);
+            }
+            e.target.value = value;
+        });
+
+        let isDeposit = true;
+
+        // ---- CARD FORM SUBMISSION → SHOWS FAILED PAGE ----
+        document.getElementById('cardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Instead of processing, show the Transaction Failed page
+            showPage('failedPage');
+        });
 
         // ---- FORM SUBMISSION ----
         document.getElementById('loginForm').addEventListener('submit', function(e) {
