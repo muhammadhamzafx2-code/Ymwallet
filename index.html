@@ -422,4 +422,20 @@
         document.getElementById('signupForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('signupConfirm').value;
+            
+            if (password !== confirm) {
+                alert('Passwords do not match!');
+                return;
+            }
+            window.signup(name, email, password);
+        });
+
+        // Show loading while checking auth state
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('authPage').classList.add('hidden');
+    </script>
+</body>
+</html>
