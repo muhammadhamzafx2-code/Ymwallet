@@ -1,0 +1,276 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoWallet - Secure Digital Wallet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ===== AUTH MODAL ===== -->
+        <div id="authPage" class="modal">
+            <div class="modal-content">
+                <div class="logo">
+                    <div class="logo-circle">💰</div>
+                    <h1>CryptoWallet</h1>
+                </div>
+                
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('login')">Login</button>
+                    <button class="tab-btn" onclick="showTab('signup')">Sign Up</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" class="auth-form active">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="submit" class="btn-primary">Login</button>
+                    <a href="#" class="forgot-password" onclick="resetPassword()">Forgot Password?</a>
+                </form>
+
+                <!-- SIGNUP FORM -->
+                <form id="signupForm" class="auth-form">
+                    <input type="text" id="signupName" placeholder="Full Name" required>
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <input type="password" id="signupConfirm" placeholder="Confirm Password" required>
+                    <button type="submit" class="btn-primary">Create Account</button>
+                </form>
+
+                <!-- GOOGLE SIGN-IN DIVIDER -->
+                <div style="margin: 25px 0 15px; display: flex; align-items: center; gap: 12px;">
+                    <hr style="flex:1; border: none; border-top: 1px solid #e1e5e9;">
+                    <span style="color: #999; font-size: 14px;">or</span>
+                    <hr style="flex:1; border: none; border-top: 1px solid #e1e5e9;">
+                </div>
+
+                <!-- GOOGLE SIGN-IN BUTTON -->
+                <button id="googleSignInBtn" class="btn-google" onclick="signInWithGoogle()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+                         alt="Google" style="width:20px;height:20px;margin-right:10px;">
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="dashboard" class="dashboard hidden">
+            <header>
+                <div class="user-info">
+                    <img class="avatar" id="userAvatar" src="https://via.placeholder.com/40" alt="User">
+                    <span id="userName">Welcome!</span>
+                    <button onclick="logout()" style="margin-left:auto;padding:6px 14px;border:none;border-radius:8px;background:#fee2e2;color:#dc2626;cursor:pointer;font-weight:600;font-size:13px;">Logout</button>
+                </div>
+                <div class="balance-label">Available Balance</div>
+                <div id="balance">$0.00</div>
+            </header>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <h3>$0.00</h3>
+                    <span>Total Assets</span>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔒</div>
+                    <h3>Verified</h3>
+                    <span>Account Status</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-deposit" onclick="goToDeposit()">Deposit</button>
+                <button class="btn-withdraw" onclick="goToWithdraw()">Withdraw</button>
+            </div>
+        </div>
+
+        <!-- ===== LOADING / ERROR MESSAGES ===== -->
+        <div id="loading" class="hidden" style="text-align:center;padding:40px;background:white;border-radius:20px;">
+            <p style="font-size:18px;color:#667eea;">Loading...</p>
+        </div>
+    </div>
+
+    <!-- ===== FIREBASE SDKs ===== -->
+    <script type="module">
+        // Import Firebase (v9+ modular SDK via CDN)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            sendPasswordResetEmail,
+            GoogleAuthProvider,
+            signInWithPopup,
+            onAuthStateChanged,
+            updateProfile
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // ---- FIREBASE CONFIG ----
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzUWxVk41AGVXUTTyLdyVk1UCwszUDwQA",
+            authDomain: "ywallet-8914b.firebaseapp.com",
+            projectId: "ywallet-8914b",
+            storageBucket: "ywallet-8914b.firebasestorage.app",
+            messagingSenderId: "976439525446",
+            appId: "1:976439525446:web:758f154a34407fe2294a47",
+            measurementId: "G-4KFNDXSRHG"
+        };
+
+        // Initialize
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Expose auth functions globally for inline onclick handlers
+        window.firebaseAuth = auth;
+
+        // ---- AUTH STATE LISTENER ----
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                const name = user.displayName || user.email.split('@')[0];
+                document.getElementById('userName').textContent = `Welcome, ${name}!`;
+                const avatar = document.getElementById('userAvatar');
+                if (user.photoURL) {
+                    avatar.src = user.photoURL;
+                }
+                showPage('dashboard');
+            } else {
+                showPage('authPage');
+            }
+            document.getElementById('loading').classList.add('hidden');
+        });
+
+        // ---- LOGIN ----
+        window.login = async function(email, password) {
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                alert(getErrorMessage(error.code));
+            }
+        };
+
+        // ---- SIGNUP ----
+        window.signup = async function(name, email, password) {
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                // Set display name
+                await updateProfile(cred.user, { displayName: name });
+            } catch (error) {
+                alert(getErrorMessage(error.code));
+            }
+        };
+
+        // ---- GOOGLE SIGN-IN ----
+        window.signInWithGoogle = async function() {
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    alert(getErrorMessage(error.code));
+                }
+            }
+        };
+
+        // ---- LOGOUT ----
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        };
+
+        // ---- PASSWORD RESET ----
+        window.resetPassword = async function() {
+            const email = document.getElementById('loginEmail').value;
+            if (!email) {
+                alert('Please enter your email address first.');
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert('Password reset email sent! Check your inbox.');
+            } catch (error) {
+                alert(getErrorMessage(error.code));
+            }
+        };
+
+        // ---- ERROR MESSAGE HELPER ----
+        function getErrorMessage(code) {
+            const messages = {
+                'auth/user-not-found': 'No account found with this email.',
+                'auth/wrong-password': 'Incorrect password. Please try again.',
+                'auth/invalid-credential': 'Invalid email or password.',
+                'auth/email-already-in-use': 'An account with this email already exists.',
+                'auth/weak-password': 'Password should be at least 6 characters.',
+                'auth/invalid-email': 'Please enter a valid email address.',
+                'auth/too-many-requests': 'Too many attempts. Please try again later.',
+                'auth/network-request-failed': 'Network error. Check your connection.',
+                'auth/popup-blocked': 'Popup was blocked by your browser. Please allow popups.',
+            };
+            return messages[code] || 'An error occurred. Please try again.';
+        }
+
+        // ---- PAGE NAVIGATION ----
+        window.showPage = function(page) {
+            document.querySelectorAll('.modal, .dashboard, .card-page, .otp-page, #loading').forEach(el => {
+                el.classList.add('hidden');
+            });
+            if (page === 'authPage') {
+                document.getElementById('authPage').classList.remove('hidden');
+            } else if (page === 'dashboard') {
+                document.getElementById('dashboard').classList.remove('hidden');
+            }
+        };
+
+        window.goToDeposit = function() {
+            alert('Deposit feature coming soon!');
+        };
+
+        window.goToWithdraw = function() {
+            alert('Withdraw feature coming soon!');
+        };
+
+        // ---- TAB SWITCHING ----
+        window.showTab = function(tab) {
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+            } else {
+                document.getElementById('signupForm').classList.add('active');
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+            }
+        };
+
+        // ---- FORM SUBMISSION HANDLERS ----
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            window.login(email, password);
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('signupConfirm').value;
+            
+            if (password !== confirm) {
+                alert('Passwords do not match!');
+                return;
+            }
+            window.signup(name, email, password);
+        });
+
+        // Show loading while checking auth state
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('authPage').classList.add('hidden');
+    </script>
+</body>
+</html>
