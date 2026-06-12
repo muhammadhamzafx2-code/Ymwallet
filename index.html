@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- ===== LOADING / ERROR MESSAGES ===== -->
+        <!-- ===== LOADING ===== -->
         <div id="loading" class="hidden" style="text-align:center;padding:40px;background:white;border-radius:20px;">
             <p style="font-size:18px;color:#667eea;">Loading...</p>
         </div>
@@ -92,7 +92,6 @@
 
     <!-- ===== FIREBASE SDKs ===== -->
     <script type="module">
-        // Import Firebase (v9+ modular SDK via CDN)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
             getAuth, 
@@ -106,28 +105,24 @@
             updateProfile
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // ---- FIREBASE CONFIG ----
+        // ---- 🔥 YOUR NEW FIREBASE CONFIG 🔥 ----
         const firebaseConfig = {
-            apiKey: "AIzaSyCzUWxVk41AGVXUTTyLdyVk1UCwszUDwQA",
-            authDomain: "ywallet-8914b.firebaseapp.com",
-            projectId: "ywallet-8914b",
-            storageBucket: "ywallet-8914b.firebasestorage.app",
-            messagingSenderId: "976439525446",
-            appId: "1:976439525446:web:758f154a34407fe2294a47",
-            measurementId: "G-4KFNDXSRHG"
+            apiKey: "AIzaSyDtcXcqTyaVaXzN8bY_ORsiC9CTcJkfHcw",
+            authDomain: "xmv-ai.firebaseapp.com",
+            projectId: "xmv-ai",
+            storageBucket: "xmv-ai.firebasestorage.app",
+            messagingSenderId: "617791824706",
+            appId: "1:617791824706:web:c6dbd0643991a153701edb",
+            measurementId: "G-K31848J74C"
         };
 
         // Initialize
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Expose auth functions globally for inline onclick handlers
-        window.firebaseAuth = auth;
-
         // ---- AUTH STATE LISTENER ----
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
                 const name = user.displayName || user.email.split('@')[0];
                 document.getElementById('userName').textContent = `Welcome, ${name}!`;
                 const avatar = document.getElementById('userAvatar');
@@ -154,7 +149,6 @@
         window.signup = async function(name, email, password) {
             try {
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
-                // Set display name
                 await updateProfile(cred.user, { displayName: name });
             } catch (error) {
                 alert(getErrorMessage(error.code));
@@ -246,7 +240,7 @@
             }
         };
 
-        // ---- FORM SUBMISSION HANDLERS ----
+        // ---- FORM SUBMISSION ----
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
