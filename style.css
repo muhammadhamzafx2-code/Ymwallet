@@ -399,3 +399,30 @@ body {
     border-color: #667eea;
     transform: translateY(-2px);
 }
+.error-msg {
+    color: #ef4444;
+    font-size: 13px;
+    margin-bottom: 10px;
+    text-align: left;
+    min-height: 20px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+    color: #999;
+    font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e1e5e9;
+}
+
+.divider span {
+    padding: 0 15px;
+}
